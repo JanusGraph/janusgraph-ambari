@@ -14,24 +14,27 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+  The following file from the 2.6 branch titan service was used as a template:
+  https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/metainfo.xml
 -->
 <metainfo>
   <schemaVersion>2.0</schemaVersion>
   <services>
     <service>
-      <name>TITAN</name>
-      <displayName>Titan</displayName>
-      <comment>Titan is a scalable graph database optimized for storing and querying graphs containing hundreds of
+      <name>JANUSGRAPH</name>
+      <displayName>JanusGraph</displayName>
+      <comment>JanusGraph is a scalable graph database optimized for storing and querying graphs containing hundreds of
         billions of vertices and edges distributed across a multi-machine cluster.</comment>
-      <version>1.0.0</version>
+      <version>0.3.1</version>
       <components>
         <component>
-          <name>TITAN_SERVER</name>
-          <displayName>Titan Server</displayName>
+          <name>JANUSGRAPH_SERVER</name>
+          <displayName>JanusGraph Server</displayName>
           <category>MASTER</category>
           <cardinality>1</cardinality>
           <commandScript>
-            <script>scripts/titan_server.py</script>
+            <script>scripts/janusgraph_server.py</script>
             <scriptType>PYTHON</scriptType>
             <timeout>600</timeout>
           </commandScript>
@@ -43,56 +46,17 @@
             </configFile>
           </configFiles>
         </component>
-        <component>
-          <name>TITAN_CLIENT</name>
-          <displayName>Titan Client</displayName>
-          <category>CLIENT</category>
-          <cardinality>0+</cardinality>
-          <versionAdvertised>true</versionAdvertised>
-          <commandScript>
-            <script>scripts/titan_client.py</script>
-            <scriptType>PYTHON</scriptType>
-	        <timeout>600</timeout>
-          </commandScript>
-          <configFiles>
-            <configFile>
-               <type>env</type>
-               <fileName>titan-env.sh</fileName>
-               <dictionaryName>titan-env</dictionaryName>
-            </configFile>
-            <configFile>
-                <type>env</type>
-                <fileName>log4j-console.properties</fileName>
-                <dictionaryName>titan-log4j</dictionaryName>
-            </configFile>
-            <configFile>
-                <type>env</type>
-                <fileName>titan-hbase-solr.properties</fileName>
-                <dictionaryName>titan-hbase-solr</dictionaryName>
-            </configFile>
-            <configFile>
-              <type>env</type>
-              <fileName>hadoop-gryo.properties</fileName>
-              <dictionaryName>hadoop-gryo</dictionaryName>
-            </configFile>
-            <configFile>
-              <type>env</type>
-              <fileName>hadoop-hbase-read.properties</fileName>
-              <dictionaryName>hadoop-hbase-read</dictionaryName>
-            </configFile>
-          </configFiles>
-        </component>
       </components>
       <osSpecifics>
         <osSpecific>
           <osFamily>any</osFamily>
           <packages>
             <package>
-              <name>titan</name>
+              <name>janusgraph</name>
             </package>
 	        <package>
 	          <name>ambari-infra-solr-client-*</name>
-	        </package>
+	        </package> 
           </packages>
         </osSpecific>
       </osSpecifics>
@@ -112,9 +76,9 @@
       
       <configuration-dependencies>
 	<config-type>gremlin-server</config-type>
-        <config-type>titan-env</config-type>
-        <config-type>titan-hbase-solr</config-type>
-        <config-type>titan-log4j</config-type>
+        <config-type>janusgraph-env</config-type>
+        <config-type>janusgraph-hbase-solr</config-type>
+        <config-type>janusgraph-log4j</config-type>
         <config-type>hadoop-gryo</config-type>
         <config-type>hadoop-hbase-read</config-type>
 	<config-type>knox-env</config-type>

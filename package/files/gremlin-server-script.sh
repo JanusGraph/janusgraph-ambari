@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# The following file from the Ambari 2.6 branch titan service was used as a template:
+# https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/package/files/gremlin-server-script.sh
+
 # Init script for Gremlin Server so it automatically starts/stops with the machine.
 #
 # To install:

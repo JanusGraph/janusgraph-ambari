@@ -17,6 +17,8 @@ limitations under the License.
 
 Ambari Agent
 
+  The following file from the Ambari 2.6 branch titan service was used as a template:
+  https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/scripts/service_check.py
 """
 
 import os
@@ -30,17 +32,17 @@ from resource_management.libraries.script.script import Script
 from resource_management.libraries.functions.validate import call_and_match_output
 from ambari_commons.os_family_impl import OsFamilyFuncImpl, OsFamilyImpl
 
-class TitanServiceCheck(Script):
+class JanusGraphServiceCheck(Script):
     pass
 
 @OsFamilyImpl(os_family=OsFamilyImpl.DEFAULT)
-class TitanServiceCheckDefault(TitanServiceCheck):
+class JanusGraphServiceCheckDefault(JanusGraphServiceCheck):
     def service_check(self, env):
         import params
         env.set_params(params)
-	
-        File( format("{tmp_dir}/titanSmoke.groovy"),
-              content = StaticFile("titanSmoke.groovy"),
+
+        File( format("{tmp_dir}/janusgraphSmoke.groovy"),
+              content = StaticFile("janusgraphSmoke.groovy"),
               mode = 0755
               )
 
@@ -50,39 +52,40 @@ class TitanServiceCheckDefault(TitanServiceCheck):
             Execute(kinit_cmd,
                     user=params.smokeuser
                     )
-        
+
 	secure=""
-        if params.titan_server_ssl == "true" :
+        if params.janusgraph_server_ssl == "true" :
                 secure="-k"
-                if params.titan_server_ssl_key_cert_file:
-                    secure="--cacert " + params.titan_server_ssl_key_cert_file.split(":")[1]
+                if params.janusgraph_server_ssl_key_cert_file:
+                    secure="--cacert " + params.janusgraph_server_ssl_key_cert_file.split(":")[1]
         grepresult=""" | grep 99"""
-        if len(params.titan_server_simple_authenticator) > 0:
+        if len(params.janusgraph_server_simple_authenticator) > 0:
             grepresult = ""
         headers=""" -XPOST -Hcontent-type:application/json -d '{"gremlin":"100-1"}' """
         http="http://"
-        if params.titan_server_ssl == "true":
+        if params.janusgraph_server_ssl == "true":
             http="https://"
-        titan_server_host = http + format("{titan_host}")
-        titan_port=format("{titan_server_port}")
-        cmd = "curl " + secure + headers + titan_server_host + ":" + titan_port + grepresult
-       
+        janusgraph_server_host = http + format("{janusgraph_host}")
+        janusgraph_port=format("{janusgraph_server_port}")
+        cmd = "curl " + secure + headers + janusgraph_server_host + ":" + janusgraph_port + grepresult
+	gremlin_bin = params.janusgraph_bin_dir + "/gremlin.sh"
+
         Execute((cmd),
                 tries     = 40,
                 try_sleep = 5,
-                path      = format('{titan_bin_dir}:/usr/sbin:/sbin:/usr/local/bin:/bin:/usr/bin'),
+                path      = format('{janusgraph_bin_dir}:/usr/sbin:/sbin:/usr/local/bin:/bin:/usr/bin'),
                 user      = params.smokeuser,
                 logoutput = True
                 )
 
-        Execute(format("gremlin {tmp_dir}/titanSmoke.groovy"),
+        Execute(format("{gremlin_bin} {tmp_dir}/janusgraphSmoke.groovy"),
                 tries     = 3,
                 try_sleep = 5,
-                path      = format('{titan_bin_dir}:/usr/sbin:/sbin:/usr/local/bin:/bin:/usr/bin'),
+                path      = format('{janusgraph_bin_dir}:/usr/sbin:/sbin:/usr/local/bin:/bin:/usr/bin'),
                 user      = params.smokeuser,
                 logoutput = True
                 )
 
 if __name__ == "__main__":
     # print "Track service check status"
-    TitanServiceCheck().execute()
+    JanusGraphServiceCheck().execute()

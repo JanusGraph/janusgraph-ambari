@@ -18,63 +18,63 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+  The following file from the Ambari 2.6 branch titan service was used as a template:
+  https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/configuration/gremlin-server.xml
 -->
 <configuration supports_final="false" supports_adding_forbidden="true">
 
   <property>
     <name>content</name>
-    <description>Configuration for Titan Server</description>
+    <description>Configuration for JanusGraph Server</description>
     <value>
-host: {{titan_host}}
-port: {{titan_server_port}}
-threadPoolWorker: 1
-gremlinPool: 8
+host: {{janusgraph_host}}
+port: {{janusgraph_server_port}}
 scriptEvaluationTimeout: 300000
 serializedResponseTimeout: 300000
-channelizer: org.apache.tinkerpop.gremlin.server.channel.HttpChannelizer
+channelizer: org.apache.tinkerpop.gremlin.server.channel.WsAndHttpChannelizer
 graphs: {
-  graph: conf/titan-hbase-solr.properties,
+  graph: conf/janusgraph-hbase-solr.properties,
   graphSpark: conf/hadoop-graph/hadoop-gryo.properties}
-plugins:
-  - aurelius.titan
-  - tinkerpop.spark
-  - tinkerpop.hadoop
-  - tinkerpop.tinkergraph
 scriptEngines: {
   gremlin-groovy: {
-    imports: [java.lang.Math],
-    staticImports: [java.lang.Math.PI],
-    scripts: [scripts/empty-sample.groovy]},
-  nashorn: {
-      imports: [java.lang.Math],
-      staticImports: [java.lang.Math.PI]}}
+    plugins: { org.janusgraph.graphdb.tinkerpop.plugin.JanusGraphGremlinPlugin: {},
+               org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin: {},
+               org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin: {},
+               org.apache.tinkerpop.gremlin.jsr223.ImportGremlinPlugin: {classImports: [java.lang.Math], methodImports: [java.lang.Math#*]},
+               org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin: {files: [scripts/empty-sample.groovy]}}}}
 serializers:
-  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { useMapperFromGraph: graph }}
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0, config: { ioRegistries: [org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry] }}
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0, config: { serializeResultToString: true }}
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV3d0, config: { ioRegistries: [org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry] }}
+  # Older serialization versions for backwards compatibility:
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { ioRegistries: [org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry] }}
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoLiteMessageSerializerV1d0, config: {ioRegistries: [org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry] }}
   - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { serializeResultToString: true }}
-  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV1d0, config: { useMapperFromGraph: graph }}
-  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0, config: { useMapperFromGraph: graph }}
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV2d0, config: { ioRegistries: [org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistry] }}
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerGremlinV1d0, config: { ioRegistries: [org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistryV1d0] }}
+  - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV1d0, config: { ioRegistries: [org.janusgraph.graphdb.tinkerpop.JanusGraphIoRegistryV1d0] }}
 processors:
   - { className: org.apache.tinkerpop.gremlin.server.op.session.SessionOpProcessor, config: { sessionTimeout: 28800000 }}
+  - { className: org.apache.tinkerpop.gremlin.server.op.traversal.TraversalOpProcessor, config: { cacheExpirationTime: 600000, cacheMaxSize: 1000 }}
 metrics: {
   consoleReporter: {enabled: true, interval: 180000},
-  csvReporter: {enabled: true, interval: 180000, fileName: /tmp/gremlin-server-metrics.csv},
+  csvReporter: {enabled: true, interval: 180000, fileName: {{janusgraph_server_csv_metrics}}},
   jmxReporter: {enabled: true},
   slf4jReporter: {enabled: true, interval: 180000},
   gangliaReporter: {enabled: false, interval: 180000, addressingMode: MULTICAST},
   graphiteReporter: {enabled: false, interval: 180000}}
-threadPoolBoss: 1
 maxInitialLineLength: 4096
 maxHeaderSize: 8192
 maxChunkSize: 8192
 maxContentLength: 65536
 maxAccumulationBufferComponents: 1024
 resultIterationBatchSize: 64
-writeBufferHighWaterMark: 32768
+writeBufferLowWaterMark: 32768
 writeBufferHighWaterMark: 65536
 ssl: {
-  enabled: {{titan_server_ssl}}{{titan_server_ssl_key_file}}{{titan_server_ssl_key_password}}{{titan_server_ssl_key_cert_file}}
+  enabled: {{janusgraph_server_ssl}}{{janusgraph_server_ssl_key_file}}{{janusgraph_server_ssl_key_password}}{{janusgraph_server_ssl_key_cert_file}}
 }
-{{titan_server_simple_authenticator}}
+{{janusgraph_server_simple_authenticator}}
     </value>
     <value-attributes>
       <show-property-name>false</show-property-name>

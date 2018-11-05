@@ -14,13 +14,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+# The following file from the Ambari 2.6 branch titan service was used as a template:
+# https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/templates/titan_solr_jaas.conf.j2
 #}
+
 
 Client {
  com.sun.security.auth.module.Krb5LoginModule required
  useKeyTab=true
  storeKey=true
  useTicketCache=false
- keyTab="{{titan_keytab_path}}"
- principal="{{titan_jaas_princ}}";
+ keyTab="{{janusgraph_keytab_path}}"
+ principal="{{janusgraph_jaas_princ}}";
 };

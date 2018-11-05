@@ -11,10 +11,16 @@
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
- limitations under the License */
+ limitations under the License 
 
-import com.thinkaurelius.titan.core.TitanFactory;
+  The following file from the Ambari 2.6 branch titan service was used as a template:
+  https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/package/files/titanSmoke.groovy
+*/
 
-graph = TitanFactory.open("/etc/titan/conf/titan-hbase-solr.properties")
+import org.janusgraph.core.JanusGraphFactory
+
+
+graph = JanusGraphFactory.open("/opt/janusgraph/conf/janusgraph-hbase-solr.properties")
 g = graph.traversal()
-l = g.V().values('name').toList()
+l = g.V().limit(1).valueMap(true).toList()
+graph.close()

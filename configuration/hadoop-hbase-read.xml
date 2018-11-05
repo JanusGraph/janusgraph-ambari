@@ -18,6 +18,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+  The following file from the Ambari 2.6 branch titan service was used as a template:
+  https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/configuration/hadoop-hbase-read.xml
 -->
 
 <configuration supports_final="false" supports_adding_forbidden="true">
@@ -43,8 +45,8 @@
 # specific language governing permissions and limitations
 # under the License.
 gremlin.graph=org.apache.tinkerpop.gremlin.hadoop.structure.HadoopGraph
-gremlin.hadoop.graphInputFormat=com.thinkaurelius.titan.hadoop.formats.hbase.HBaseInputFormat
-gremlin.hadoop.graphOutputFormat=org.apache.hadoop.mapreduce.lib.output.NullOutputFormat
+gremlin.hadoop.graphReader=org.janusgraph.hadoop.formats.hbase.HBaseInputFormat
+gremlin.hadoop.graphWriter=org.apache.tinkerpop.gremlin.hadoop.structure.io.gryo.GryoOutputFormat
 gremlin.hadoop.jarsInDistributedCache=true
 gremlin.hadoop.deriveMemory=false
 gremlin.hadoop.memoryOutputFormat=org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat
@@ -52,9 +54,9 @@ gremlin.hadoop.memoryOutputFormat=org.apache.hadoop.mapreduce.lib.output.Sequenc
 gremlin.hadoop.inputLocation=none
 gremlin.hadoop.outputLocation=output
 
-titanmr.ioformat.conf.storage.backend=hbase
-titanmr.ioformat.conf.storage.hbase.table=titan_solr
-titanmr.ioformat.conf.storage.hostname={{storage_host}}
+janusgraphmr.ioformat.conf.storage.backend=hbase
+janusgraphmr.ioformat.conf.storage.hostname={{storage_host}}
+janusgraphmr.ioformat.conf.storage.hbase.table={{janusgraph_hbase_table}}
 zookeeper.znode.parent={{hbase_zookeeper_parent}}
 
 #####################################

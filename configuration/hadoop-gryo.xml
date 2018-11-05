@@ -18,6 +18,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+  The following file from the Ambari 2.6 branch titan service was used as a template:
+  https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/configuration/hadoop-gryo.xml
 -->
 
 <configuration supports_final="false" supports_adding_forbidden="true">
@@ -43,8 +45,8 @@
 # specific language governing permissions and limitations
 # under the License.
 gremlin.graph=org.apache.tinkerpop.gremlin.hadoop.structure.HadoopGraph
-gremlin.hadoop.graphInputFormat=org.apache.tinkerpop.gremlin.hadoop.structure.io.gryo.GryoInputFormat
-gremlin.hadoop.graphOutputFormat=org.apache.tinkerpop.gremlin.hadoop.structure.io.gryo.GryoOutputFormat
+gremlin.hadoop.graphReader=org.apache.tinkerpop.gremlin.hadoop.structure.io.gryo.GryoInputFormat
+gremlin.hadoop.graphWriter=org.apache.tinkerpop.gremlin.hadoop.structure.io.gryo.GryoOutputFormat
 gremlin.hadoop.jarsInDistributedCache=true
 
 gremlin.hadoop.inputLocation=data/tinkerpop-modern.kryo
@@ -84,6 +86,7 @@ spark.executorEnv.SPARK_CONF_DIR={{spark_config_dir}}
 spark.executor.memory=2g
 spark.executor.extraClassPath={{hbase_config_dir}}
 spark.serializer=org.apache.spark.serializer.KryoSerializer
+spark.kryo.registrator=org.apache.tinkerpop.gremlin.spark.structure.io.gryo.GryoRegistrator
     </value>
     <value-attributes>
       <show-property-name>false</show-property-name>

@@ -1,29 +1,37 @@
  {
-  "TITAN": {
-    "TITAN_SERVER": [
+  "JANUSGRAPH": {
+    "JANUSGRAPH_SERVER": [
       {
-        "name": "titan",
-        "label": "titan server",
-        "description": "This host-level alert is triggered if the Titan Server Instance is unreachable.",
+        "name": "janusgraph",
+        "label": "janusgraph server",
+        "description": "This host-level alert is triggered if the JanusGraph Server Instance is unreachable.",
         "interval": 1,
         "scope": "ANY",
         "source": {
           "type": "SCRIPT",
-	  "path": "TITAN/1.0.0/package/alerts/alert_check_titan_server.py",
+	  "path": "JANUSGRAPH/package/alerts/alert_check_janusgraph_server.py",
 	  "parameters": [
             {
-              "name": "titan.run.dir",
+              "name": "janusgraph.run.dir",
               "display_name": "Run Directory",
-              "value": "/var/run/titan",
+              "value": "{{janusgraph-env/janusgraph_pid_dir}}",
               "type": "STRING",
-              "description": "The directory where titan server processe place its PID files."
+              "description": "The directory where the JanusGraph server process places its PID files."
+            },
+            {
+              "name": "janusgraph.install.dir",
+              "display_name": "JanusGraph Install Directory",
+              "value": "{{janusgraph-env/janusgraph_install_dir}}",
+              "type": "STRING",
+              "description": "The directory where the JanusGraph dist is located."
             },
 	    {
-              "name": "titan.user",
-              "display_name": "Titan User",
-              "value": "titan",
+              "name": "janusgraph.user",
+              "display_name": "JanusGraph User",
+              "value": "janusgraph",
+              "value": "{{janusgraph-env/janusgraph_user}}",
               "type": "STRING",
-              "description": "User who starts the Titan Server process"
+              "description": "User who starts the JanusGraph Server process"
             }
           ]
         }

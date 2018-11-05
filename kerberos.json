@@ -1,41 +1,40 @@
 {
   "services": [
     {
-      "name": "TITAN",
+      "name": "JANUSGRAPH",
       "components": [
         {
-          "name": "TITAN_SERVER",
+          "name": "JANUSGRAPH_SERVER",
           "identities": [
             {
-              "name": "titan_principal",
+              "name": "janusgraph_principal",
               "principal": {
-                "value": "${titan-env/titan_user}/_HOST@${realm}",
+                "value": "${janusgraph-env/janusgraph_user}/_HOST@${realm}",
                 "type" : "service",
-                "configuration": "titan-env/titan_principal_name",
-                "local_username": "${titan-env/titan_user}"
+                "configuration": "janusgraph-env/janusgraph_principal_name",
+                "local_username": "${janusgraph-env/janusgraph_user}"
 
               },
               "keytab": {
-                "file": "${keytab_dir}/titan.service.keytab",
+                "file": "${keytab_dir}/janusgraph.service.keytab",
                 "owner": {
-                  "name": "${titan-env/titan_user}",
+                  "name": "${janusgraph-env/janusgraph_user}",
                   "access": "r"
                 },
                 "group": {
                   "name": "${cluster-env/user_group}",
                   "access": ""
                 },
-                "configuration": "titan-env/titan_keytab_path"
+                "configuration": "janusgraph-env/janusgraph_keytab_path"
               }
             }
           ]
         },
         {
-          "name": "TITAN_CLIENT",
+          "name": "JANUSGRAPH_CLIENT",
           "identities": [
             {
-              "name": "titan_titan_client_hdfs",
-              "reference": "/HDFS/NAMENODE/hdfs"
+              "name": "/HDFS/NAMENODE/hdfs"
             }
           ]
         }
@@ -43,8 +42,8 @@
       "configurations": [
         {
           "core-site": {
-            "hadoop.proxyuser.titan.groups": "${hadoop-env/proxyuser_group}",
-            "hadoop.proxyuser.titan.hosts": "*"
+            "hadoop.proxyuser.janusgraph.groups": "${hadoop-env/proxyuser_group}",
+            "hadoop.proxyuser.janusgraph.hosts": "*"
           }
         }
       ]

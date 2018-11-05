@@ -17,40 +17,47 @@ limitations under the License.
 
 Ambari Agent
 
+  The following file from the Ambari 2.6 branch titan service was used as a template:
+  https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/scripts/titan_client.py
 """
 
 import sys
 import os
 from resource_management import *
+from resource_management.libraries.functions import conf_select
 from resource_management.libraries.functions import stack_select
 from resource_management.libraries.functions import StackFeature
 from resource_management.libraries.functions.stack_features import check_stack_feature
-import titan
+import janusgraph
 
 from ambari_commons.os_family_impl import OsFamilyFuncImpl, OsFamilyImpl
 
-class TitanClient(Script):
+class JanusGraphClient(Script):
+    def get_component_name(self):
+        return "janusgraph-client"
+
     def configure(self, env):
         import params
         env.set_params(params)
-        titan.titan()
+        janusgraph.janusgraph()
 
     def status(self, env):
         raise ClientComponentHasNoStatus()
 
 @OsFamilyImpl(os_family=OsFamilyImpl.DEFAULT)
-class TitanClientLinux(TitanClient):
+class JanusGraphClientLinux(JanusGraphClient):
 
     def pre_rolling_restart(self, env):
         import params
         env.set_params(params)
 
         if params.version and check_stack_feature(StackFeature.ROLLING_UPGRADE, params.version):
-            stack_select.select_packages(params.version)
+            conf_select.select(params.stack_name, "janusgraph", params.version)
+            stack_select.select("janusgraph-client", params.version)
 
     def install(self, env):
         self.install_packages(env)
         self.configure(env)
 
 if __name__ == "__main__":
-    TitanClient().execute()
+    JanusGraphClient().execute()

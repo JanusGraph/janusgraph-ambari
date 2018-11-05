@@ -12,17 +12,10 @@
 # organization's name should be added to the AUTHORS.txt file, depending on
 # whether the individual or corporate CLA was used.
 
-# The original list was generated via:
-#
-#     $ git log --all --format='%aN <%cE>' | sort -u --ignore-case
-#
-# and manual cleanup.
-
 # Names should be added to this file like so:
 #     Individual's name <email1>
 #     Individual's name <email1> <email2> <emailN>
 
 # Please keep the list sorted.
-
 Chris Hupman <chupman@us.ibm.com>
 Jason Plurad <pluradj@us.ibm.com>

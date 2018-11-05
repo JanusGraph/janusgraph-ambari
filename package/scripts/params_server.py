@@ -17,6 +17,8 @@ limitations under the License.
 
 Ambari Agent
 
+  The following file from the Ambari 2.6 branch titan service was used as a template:
+  https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/scripts/params_server.py
 """
 
 
@@ -33,5 +35,5 @@ from resource_management.libraries.functions import get_kinit_path
 # server configurations
 config = Script.get_config()
 
-titan_pid_dir = config['configurations']['titan-env']['titan_pid_dir']
-titan_pid_file = format("{titan_pid_dir}/titan.pid")
+janusgraph_pid_dir = config['configurations']['janusgraph-env']['janusgraph_pid_dir']
+janusgraph_pid_file = format("{janusgraph_pid_dir}/janusgraph.pid")

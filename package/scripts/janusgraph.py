@@ -17,6 +17,8 @@ limitations under the License.
 
 Ambari Agent
 
+  The following file from the Ambari 2.6 branch titan service was used as a template:
+  https://github.com/apache/ambari/blob/branch-2.6/ambari-server/src/main/resources/common-services/TITAN/1.0.0/scripts/titan.py
 """
 import os
 from resource_management import *
@@ -25,119 +27,125 @@ from ambari_commons.os_family_impl import OsFamilyFuncImpl, OsFamilyImpl
 
 
 @OsFamilyFuncImpl(os_family=OsFamilyImpl.DEFAULT)
-def titan(type = None, upgrade_type=None):
+def janusgraph(type = None, upgrade_type=None):
     import params
     import params_server
     if type == 'server':
-        File(format("{params.titan_server_conf_dir}/gremlin-server.yaml"),
+        Directory(params.janusgraph_server_conf_dir,
+                  create_parents=True,
+                  owner=params.janusgraph_user,
+                  group=params.user_group,
+                  mode=0775
+                  )
+        File(format("{params.janusgraph_server_conf_dir}/gremlin-server.yaml"),
              mode=0644,
              group=params.user_group,
-             owner=params.titan_user,
+             owner=params.janusgraph_user,
              content=InlineTemplate(params.gremlin_server_configs)
              )
-        credentials_file = format("{params.titan_data_dir}/credentials.kryo")
+        credentials_file = format("{params.janusgraph_data_dir}/credentials.kryo")
         if not os.path.isfile(credentials_file):
              File(credentials_file,
                   mode=0644,
                   group=params.user_group,
-                  owner=params.titan_user,
+                  owner=params.janusgraph_user,
                   content=""
                   )
-        credentials_property_file = format("{params.titan_conf_dir}/tinkergraph-empty.properties")
+        credentials_property_file = format("{params.janusgraph_conf_dir}/tinkergraph-empty.properties")
         if not os.path.isfile(credentials_property_file):
              File(credentials_property_file,
                   mode=0644,
                   group=params.user_group,
-                  owner=params.titan_user,
+                  owner=params.janusgraph_user,
                   content=StaticFile("tinkergraph-empty.properties")
                   )
-        Directory(params.titan_log_dir,
+        Directory(params.janusgraph_log_dir,
                   create_parents=True,
-                  owner=params.titan_user,
+                  owner=params.janusgraph_user,
                   group=params.user_group,
                   mode=0775
                   )
-        Directory(params_server.titan_pid_dir,
+        Directory(params_server.janusgraph_pid_dir,
                   create_parents=True,
-                  owner=params.titan_user,
+                  owner=params.janusgraph_user,
                   group=params.user_group,
                   mode=0775
                   )
-        File(format("{params.titan_bin_dir}/gremlin-server-script.sh"),
+        File(format("{params.janusgraph_bin_dir}/gremlin-server-script.sh"),
              mode=0755,
-             group='root',
-             owner='root',
+             owner=params.janusgraph_user,
+             group=params.user_group,
              content = StaticFile("gremlin-server-script.sh")
              )
 
-    Directory(params.titan_conf_dir,
+    Directory(params.janusgraph_conf_dir,
               create_parents = True,
-              owner=params.titan_user,
+              owner=params.janusgraph_user,
               group=params.user_group
               )
 
-    File(format("{params.titan_conf_dir}/titan-env.sh"),
+    File(format("{params.janusgraph_conf_dir}/janusgraph-env.sh"),
              mode=0644,
              group=params.user_group,
-             owner=params.titan_user,
-             content=InlineTemplate(params.titan_env_props)
+             owner=params.janusgraph_user,
+             content=InlineTemplate(params.janusgraph_env_props)
              )
-    jaas_client_file = format('{titan_solr_client_jaas_file}')
+    jaas_client_file = format('{janusgraph_solr_client_jaas_file}')
 
     if not os.path.isfile(jaas_client_file) and params.security_enabled:
         File(jaas_client_file,
-             owner   = params.titan_user,
+             owner   = params.janusgraph_user,
              group   = params.user_group,
              mode    = 0644,
-             content = Template('titan_solr_client_jaas.conf.j2')
+             content = Template('janusgraph_solr_client_jaas.conf.j2')
              )
 
 # SparkGraphComputer
-    Directory(params.titan_conf_hadoop_graph_dir,
+    Directory(params.janusgraph_conf_hadoop_graph_dir,
               create_parents = True,
-              owner=params.titan_user,
+              owner=params.janusgraph_user,
               group=params.user_group
               )
 
-    File(format("{params.titan_conf_hadoop_graph_dir}/hadoop-gryo.properties"),
+    File(format("{params.janusgraph_conf_hadoop_graph_dir}/hadoop-gryo.properties"),
          mode=0644,
          group=params.user_group,
-         owner=params.titan_user,
-         content=InlineTemplate(params.titan_hadoop_gryo_props)
+         owner=params.janusgraph_user,
+         content=InlineTemplate(params.janusgraph_hadoop_gryo_props)
          )
 
-    File(format("{params.titan_conf_hadoop_graph_dir}/hadoop-hbase-read.properties"),
+    File(format("{params.janusgraph_conf_hadoop_graph_dir}/hadoop-hbase-read.properties"),
          mode=0644,
          group=params.user_group,
-         owner=params.titan_user,
+         owner=params.janusgraph_user,
          content=InlineTemplate(params.hadoop_hbase_read_props)
          )
 
-    # titan-hbase-solr_properties is always set to a default even if it's not in the payload
-    File(format("{params.titan_conf_dir}/titan-hbase-solr.properties"),
+    # janusgraph-hbase-solr_properties is always set to a default even if it's not in the payload
+    File(format("{params.janusgraph_conf_dir}/janusgraph-hbase-solr.properties"),
          mode=0644,
          group=params.user_group,
-         owner=params.titan_user,
-         content=InlineTemplate(params.titan_hbase_solr_props)
+         owner=params.janusgraph_user,
+         content=InlineTemplate(params.janusgraph_hbase_solr_props)
          )
 
     if (params.log4j_console_props != None):
-        File(format("{params.titan_conf_dir}/log4j-console.properties"),
+        File(format("{params.janusgraph_conf_dir}/log4j-console.properties"),
              mode=0644,
              group=params.user_group,
-             owner=params.titan_user,
+             owner=params.janusgraph_user,
              content=InlineTemplate(params.log4j_console_props)
              )
-    elif (os.path.exists(format("{params.titan_conf_dir}/log4j-console.properties"))):
-        File(format("{params.titan_conf_dir}/log4j-console.properties"),
+    elif (os.path.exists(format("{params.janusgraph_conf_dir}/log4j-console.properties"))):
+        File(format("{params.janusgraph_conf_dir}/log4j-console.properties"),
              mode=0644,
              group=params.user_group,
-             owner=params.titan_user
+             owner=params.janusgraph_user
              )
-    # Change titan ext directory for multiple user access
-    Directory(params.titan_ext_dir,
+    # Change janusgraph ext directory for multiple user access
+    Directory(params.janusgraph_ext_dir,
                create_parents = True,
-               owner=params.titan_user,
+               owner=params.janusgraph_user,
                      group=params.user_group,
                mode=0775
                )
